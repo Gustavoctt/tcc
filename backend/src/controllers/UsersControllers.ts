@@ -31,12 +31,12 @@ class UsersController{
          });
     }
 
-    async index(request: Request, response: Response){
-        const users = await knex('users').select('*');
-       
+    async compare(request: Request, response: Response){
+        
+        const users = await knex('users').select('email', 'passwordHash');
 
         return response.json({
-            users  
+            users
         });
     }
 };
