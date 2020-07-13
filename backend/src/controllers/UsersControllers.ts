@@ -19,9 +19,9 @@ class UsersController{
             email,
             passwordHash
         }
-
-        const insertUsers = await knex('users').insert(user);
         
+        const insertUsers = await knex('users').insert(user);
+            
         const user_id = insertUsers[0];
     
         return response.json({
@@ -31,13 +31,21 @@ class UsersController{
          });
     }
 
+    async returnAll(request: Request, response: Response){
+        
+        const users = await knex('users').select('*')
+
+        return response.json({ users });
+    }
+
     async compare(request: Request, response: Response){
         
-        const users = await knex('users').select('email', 'passwordHash');
+        const users = await knex('users').where({
+                                email: 'gustavocarrertartare@gmail.com',
+                                passwordHash:  '$2a$10$Ox7OrLeXHx1vciVnT7HGUOuRxqvZVvHPBP5NlwfJENNPRu7KOuwBa'
+                                }).select('*')
 
-        return response.json({
-            users
-        });
+        return response.json(users);
     }
 };
 

@@ -10,5 +10,6 @@ routes.get('/', (request, response) => {
 
 routes.post('/users', usersController.create);
 routes.get('/users', usersController.compare);
+//routes.get('/users', usersController.returnAll);
 
 export default routes;
