@@ -11,8 +11,7 @@ class UsersController{
         } = request.body;
     
         //const trx = await knex.transaction();
-        
-        const passwordHash = bcrypt.hashSync(password);
+        const passwordHash = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
 
         const user = {
             name,
@@ -39,14 +38,25 @@ class UsersController{
     }
 
     async compare(request: Request, response: Response){
-        
+
+        const {email, passwordHash, password} = request.body;
+
+        /*const passwordDecrypt = bcrypt.compareSync(password, passwordHash);
+
+        if(passwordDecrypt === true){
+            return response.json({message: 'foi'})
+        }*/
+
         const users = await knex('users').where({
-                                email: 'gustavocarrertartare@gmail.com',
-                                passwordHash:  '$2a$10$Ox7OrLeXHx1vciVnT7HGUOuRxqvZVvHPBP5NlwfJENNPRu7KOuwBa'
+                                email: email,
+                                passwordHash:  passwordHash
                                 }).select('*')
 
-        return response.json(users);
-    }
+        return response.json({message: 'Encontrou'});
+        }
+
+        //console.log(passwordDecrypt)
+        
 };
 
 export default UsersController;
