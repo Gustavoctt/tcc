@@ -39,24 +39,19 @@ class UsersController{
 
     async compare(request: Request, response: Response){
 
-        const {email, passwordHash, password} = request.body;
+        const {email, password} = request.body;
 
-        /*const passwordDecrypt = bcrypt.compareSync(password, passwordHash);
-
-        if(passwordDecrypt === true){
-            return response.json({message: 'foi'})
-        }*/
+        const passwordHashed = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
 
         const users = await knex('users').where({
                                 email: email,
-                                passwordHash:  passwordHash
-                                }).select('*')
+                                passwordHash:  passwordHashed
+                                }).select('*');
 
-        return response.json({message: 'Encontrou'});
+            return response.json({
+                users
+            });
         }
-
-        //console.log(passwordDecrypt)
-        
 };
 
 export default UsersController;
