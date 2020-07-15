@@ -10,8 +10,7 @@ class UsersController{
             password
         } = request.body;
     
-        //const trx = await knex.transaction();
-        const passwordHash = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+        const passwordHash = bcrypt.hashSync(password, 10);
 
         const user = {
             name,
@@ -41,17 +40,24 @@ class UsersController{
 
         const {email, password} = request.body;
 
-        const passwordHashed = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-
-        const users = await knex('users').where({
-                                email: email,
-                                passwordHash:  passwordHashed
-                                }).select('*');
-
-            return response.json({
-                users
-            });
-        }
+        console.log(email, password);
+        
+        const user = await knex('users').where({email}).select('*');
+        
+        console.log(user);
+        
+        if(user.length > 0){         
+            //const passwordMatch = bcrypt.compareSync(password, user[0].passwordHash);
+            
+            if(bcrypt.compareSync(password, user[0].passwordHash)){
+                return response.json({message: 'Login efetuado'});
+            }else{
+                return response.status(401).json({message: 'Senha incorreta'});
+            }
+        }else{
+            return response.status(401).json({message: 'Email Inválido'});
+        } 
+    }
 };
 
 export default UsersController;
