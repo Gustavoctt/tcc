@@ -36,15 +36,13 @@ class UsersController{
         return response.json({ users });
     }
 
-    async compare(request: Request, response: Response){
+    async login(request: Request, response: Response){
 
         const {email, password} = request.body;
 
         console.log(email, password);
         
         const user = await knex('users').where({email}).select('*');
-        
-        console.log(user);
         
         if(user.length > 0){         
             //const passwordMatch = bcrypt.compareSync(password, user[0].passwordHash);
