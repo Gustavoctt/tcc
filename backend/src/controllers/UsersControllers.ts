@@ -48,7 +48,7 @@ class UsersController{
             //const passwordMatch = bcrypt.compareSync(password, user[0].passwordHash);
             
             if(bcrypt.compareSync(password, user[0].passwordHash)){
-                return response.json({message: 'Login efetuado'});
+                return response.json({message: 'Login efetuado', ...user});
             }else{
                 return response.status(401).json({message: 'Senha incorreta'});
             }

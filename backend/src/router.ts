@@ -12,8 +12,8 @@ routes.get('/', (request, response) => {
     return response.json({message: 'Hello'})
 });
 
-routes.post('/users/create', usersController.create);
-routes.get('/login', usersController.login);
+routes.post('/users', usersController.create);
+routes.get('/users', usersController.login);
 routes.get('/allusers', usersController.returnAll);
 
 routes.post('/business', businessController.create);

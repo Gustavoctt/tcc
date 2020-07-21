@@ -15,6 +15,8 @@ class BusinessController{
             actings
         } = request.body;
 
+        const user_id = request.headers.authorization;
+
     //const trx = await knex.transaction();
 
     const ids = await knex('business').insert({
@@ -26,7 +28,8 @@ class BusinessController{
         longitude,
         latitude,
         cidade,
-        estado
+        estado,
+        user_id 
     })
 
     const businessItems = actings.map((acting_id: number) => {

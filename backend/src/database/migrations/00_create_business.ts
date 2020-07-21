@@ -13,6 +13,9 @@ export async function up(knex: Knex){
         table.decimal('latitude').notNullable();
         table.string('cidade').notNullable();
         table.string('estado', 2).notNullable();
+
+        table.string('user_id').notNullable();
+        table.foreign('user_id').references('id').inTable('users');
     })
 }
 
