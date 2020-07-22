@@ -45,12 +45,13 @@ class UsersController{
         const user = await knex('users').where({email}).select('*');
         
         if(user.length > 0){         
-            //const passwordMatch = bcrypt.compareSync(password, user[0].passwordHash);
             
             if(bcrypt.compareSync(password, user[0].passwordHash)){
-                return response.json({message: 'Login efetuado', ...user});
+                
+                return response.status(200).json({message: 'Entrou'});
             }else{
-                return response.status(401).json({message: 'Senha incorreta'});
+                
+                return response.status(401).json({message: 'Errado'});
             }
         }else{
             return response.status(401).json({message: 'Email Inválido'});

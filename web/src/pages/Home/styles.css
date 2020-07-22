@@ -1,10 +1,12 @@
 #page-home{
     height: 90vh;
-    background: url('../../assets/image-fundo.svg') no-repeat 0px bottom;   
+    background: url('../../assets/image-fundo.svg') no-repeat 0px top;   
+    background-size: 640px;
 }
 .content{
     height: 100vh;
-    background: url('../../assets/image-principal.svg') no-repeat 700px bottom;
+    background: url('../../assets/image-principal.svg') no-repeat 700px center;
+    background-size: 500px;
 }
 
 #page-home .content {
@@ -29,7 +31,7 @@
   }
   
   #page-home .content main h1 {
-    font-size: 54px;
+    font-size: 34px;
     color: var(--title-color);
   }
   
@@ -39,22 +41,57 @@
     line-height: 38px;
   }
   
-  #page-home .content main a {
+  #page-home .content main form #button-acess button {
     width: 100%;
     max-width: 360px;
-    height: 72px;
+    height: 50px;
     background: var(--primary-color);
     border-radius: 8px;
     text-decoration: none;
+    cursor: pointer;
+    border: 0;
   
     display: flex;
     align-items: center;
     overflow: hidden;
   
-    margin-top: 40px;
+    margin-top: 20px;
   }
-  
-  #page-home .content main a span {
+
+  #page-home .content form .field{
+    flex: 1;
+    max-width: 360px;
+
+    display: flex;
+    flex-direction: column;
+    margin-top: 24px;
+  }
+
+  #page-home .content form .field input[type=email],
+  #page-home .content form .field input[type=password]{
+    flex: 1;
+    background-color: #f0f0f5;
+    border-radius: 8px;
+    border: 0;
+    padding: 16px 24px;
+    font-size: 16px;
+    color: #6c6c80;
+  }
+
+  #page-home .content form .field select{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    flex: 1;
+    background: #F0F0F5;
+    border-radius: 8px;
+    border: 0;
+    padding: 16px 24px;
+    font-size: 16px;
+    color: #6C6C80;
+  }
+
+  #page-home .content main form #button-acess button span{
     display: block;
     background: rgba(0, 0, 0, 0.08);
     width: 72px;
@@ -66,29 +103,36 @@
     transition: background-color 0.2s;
   }
   
-  #page-home .content main a span svg {
+  #page-home .content main form #button-acess button svg {
     color: #FFF;
     width: 20px;
     height: 20px;
   }
   
-  #page-home .content main a strong {
+  #page-home .content main form #button-acess button strong {
     flex: 1;
     text-align: center;
     color: #FFF;
   }
   
-  #page-home .content main #button-acess a {
-    background: #E85C4B;
-  }
-
-  #page-home .content main #button-cadastro a {
+  #page-home .content main form #button-acess button {
     background: #09354B;
   }
-  
-  #page-home .content main a:hover {
-    background: #2FB86E;
+
+  #page-home .content main form a  {
+    display: flex;
+    align-items: center;
+    margin-top: 40px;
+    color: #09354B;
+    font-size: 18px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: opacity 0.2s;
   }
+  #page-home .content main form a span{
+    margin-right: 20px;
+  }
+  
   
   @media(max-width: 900px) {
     #page-home .content {

@@ -1,5 +1,5 @@
 :root {
-    --primary-color: #fff;
+    --primary-color: #092040;
     --title-color: #092040;
     --text-color: #092040;
   }
@@ -9,7 +9,9 @@
     padding: 0;
     box-sizing: border-box;
   }
-  
+
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Ubuntu:wght@400;500&display=swap');
+
   body {
     background: #F0F0F5;
     -webkit-font-smoothing: antialiased;
@@ -17,10 +19,10 @@
   }
   
   body, input, button {
-    font-family: Roboto, Arial, Helvetica, sans-serif;
+    font-family: 'Roboto', sans-serif;
   }
   
   h1, h2, h3, h4, h5, h6 {
     color: var(--title-color);
-    font-family: Ubuntu;
+    font-family: 'Ubuntu', sans-serif;
   }

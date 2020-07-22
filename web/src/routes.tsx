@@ -2,15 +2,15 @@ import React from 'react';
 import { Route, BrowserRouter } from 'react-router-dom';
 
 import Home from './pages/Home';
-import Login from './pages/Login';
 import Cadastro from './pages/Cadastro';
+import Inicio from './pages/Inicio';
 
 const Routes = () => {
     return(
         <BrowserRouter>
             <Route component={Home} path="/" exact/>
-            <Route component={Login} path="/login" exact/>
-            <Route component={Cadastro} path="/cadastro" exact/>
+            <Route component={Cadastro} path="/users" exact/>
+            <Route component={Inicio} path="/admin" exact/>
         </BrowserRouter>
     )
 }

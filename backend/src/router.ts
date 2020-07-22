@@ -10,14 +10,10 @@ const businessController = new BusinessController();
 const actingController = new ActingController();
 const profileController = new ProfileController();
 
-routes.get('/', (request, response) => {
-    return response.json({message: 'Hello'})
-});
-
 routes.get('/profile', profileController.index)
 
 routes.post('/users', usersController.create);
-routes.get('/users', usersController.login);
+routes.post('/login', usersController.login);
 routes.get('/allusers', usersController.returnAll);
 
 routes.post('/business', businessController.create);
