@@ -22,7 +22,7 @@ const Home = () => {
         try {
             const response = await api.post('login', dados)
 
-            if(response.status == 200){
+            if(response.status === 200){
                 history.push('/admin');
             }else{
                 alert('erro')
