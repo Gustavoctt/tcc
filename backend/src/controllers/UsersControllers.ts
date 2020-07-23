@@ -1,6 +1,7 @@
 import { Request, Response, request, response } from 'express';
 import knex from '../database/connection';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 class UsersController{
     async create( request: Request, response: Response ){
@@ -21,11 +22,14 @@ class UsersController{
         const insertUsers = await knex('users').insert(user);
             
         const user_id = insertUsers[0];
+
+        const token = jwt.sign({ id: user_id }, "secret", { expiresIn: 86400 })
     
         return response.json({
             id: user_id,
             password,
-            ...user
+            ...user,
+            token
          });
     }
 
@@ -47,8 +51,9 @@ class UsersController{
         if(user.length > 0){         
             
             if(bcrypt.compareSync(password, user[0].passwordHash)){
-                
+
                 return response.status(200).json({message: 'Entrou'});
+
             }else{
                 
                 return response.status(401).json({message: 'Errado'});
