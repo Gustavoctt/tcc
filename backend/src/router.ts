@@ -2,7 +2,7 @@ import express, { request, response } from 'express';
 import UsersController from './controllers/UsersControllers';
 import BusinessController from './controllers/BusinessController';
 import ActingController from './controllers/ActingController';
-import ProfileController from './controllers/ProfileController';
+import ProfileController from './controllers/_teste_ProfileController';
 
 const routes = express.Router();
 const usersController = new UsersController();
