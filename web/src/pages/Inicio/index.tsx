@@ -1,16 +1,36 @@
-import React, {useState} from 'react';
+import React, { useEffect, useState } from 'react';
+import { Map, TileLayer, Marker } from 'react-leaflet';
+import api from '../../services/api';
+import axios from 'axios';
+
 import './styles.css';
-//import { Map, TileLayer, Marker } from 'react-leaflet';
+
+interface Actings{
+    id: number,
+    title: string,
+    image_url: string
+}
+
+interface IBGEUFResponse{
+    sigla: string
+}
 
 const Inicio = () => {
+    const [actings, setActings] = useState<Actings[]>([]);
 
-    function mascaraTelefone(telefone){
+    useEffect(() => {
+        api.get('acting').then(response => {
+            setActings(response.data)
+        });
+    });
 
+    useEffect(() => {
+        axios.get<IBGEUFResponse[]>('https://servicodados.ibge.gov.br/api/v1/localidades/estados').then(response => {
+            const UFInitials = response.data.map(uf => uf.sigla);
 
-    }
-
-    //const[initialPosition, setInitialPosition] = useState<[number, number]>([0,0]);
-    //const[selectedPosition, setSelectedPosition] = useState<[number, number]>([0,0]);
+            console.log(UFInitials);
+        });
+    });
 
     return (
         <div id="page-create-business">
@@ -65,7 +85,16 @@ const Inicio = () => {
                         <span>Selecione o endereço no mapa!</span>
                     </legend>
 
-                    <div className="fied-group">
+                      <Map center={[-28.359147, -49.275375]} zoom={14}>
+                        <TileLayer 
+                                attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contribuitors'
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                        <Marker position={[-28.359147, -49.275375]}/>
+                      </Map>
+                      
+
+                    <div className="field-group">
                             <div className="field">
                                 <label htmlFor="estado">Estado</label>
                                 <select 
@@ -97,12 +126,12 @@ const Inicio = () => {
                     </legend>
 
                     <ul className="items-grid">
-                        <li>
-                            <span>Titulo</span>
-                        </li>
-                        <li>
-                            <span>Titulo</span>
-                        </li>
+                        {actings.map(item => (
+                            <li key={item.id}>
+                                <img src={item.image_url} alt={item.title} />
+                                <span>{item.title}</span>
+                            </li>
+                        ))}
                     </ul>
                 </fieldset>
 
