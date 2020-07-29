@@ -152,6 +152,17 @@ const Inicio = () => {
                             />
                         </div>
                     </div>
+
+                    <div className="field">
+                        <label htmlFor="descricao">Adicione uma descrição rápida do seu negócio</label>
+                        <input 
+                            type="text"
+                            name="descricao"
+                            id="descricao"
+                            onChange={()=> {}}
+                        />
+                    </div>
+
                 </fieldset>
 
                 <fieldset>

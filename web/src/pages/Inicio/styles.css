@@ -57,7 +57,7 @@
     flex-direction: column;
     margin-bottom: 24px;
   }
-
+  
   #page-create-business form .field input[type=text],
   #page-create-business form .field input[type=email],
   #page-create-business form .field input[type=number] {
