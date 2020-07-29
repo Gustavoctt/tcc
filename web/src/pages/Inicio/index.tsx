@@ -30,6 +30,7 @@ const Inicio = () => {
 
     const[selectedUf, setSelectedUf] = useState('0');
     const[selectedCity, setSelectedCity] = useState('0');
+    const[selectedActing, setSelectedActing] = useState<number[]>([]);
     const[selectedPosition, setSelectedPosition] = useState<[number, number]>([0,0]);
     const[selectedFile, setSelectedFile] = useState<File>();
 
@@ -90,6 +91,18 @@ const Inicio = () => {
         setSelectedCity(city);
     }
 
+    function handleSelectedActing(id: number){
+        const alreadySelected = selectedActing.findIndex(acting => acting === id);
+
+        if(alreadySelected >= 0){
+            const filteredActings = selectedActing.filter(acting => acting !== id);
+
+            setSelectedActing(filteredActings);
+
+        }else{
+            setSelectedActing([ ...selectedActing, id]);
+        }
+    }
 
 
     return (
@@ -194,10 +207,15 @@ const Inicio = () => {
                     </legend>
 
                     <ul className="items-grid">
-                        {actings.map(item => (
-                            <li key={item.id}>
-                                <img src={item.image_url} alt={item.title} />
-                                <span>{item.title}</span>
+                        {actings.map(acting => (
+                            <li 
+                                key={acting.id}
+                                onClick={() => {handleSelectedActing(acting.id)}}
+                                className={selectedActing.includes(acting.id) ? 'selected' : ''}
+                            
+                            >
+                                <img src={acting.image_url} alt={acting.title} />
+                                <span>{acting.title}</span>
                             </li>
                         ))}
                     </ul>
