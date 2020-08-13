@@ -1,18 +1,27 @@
 import React from 'react';
-import { Route, BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Route } from 'react-router-dom';
+import { useAuth } from './contexts/auth';
+import SignIn from './pages/SignIn';
+import Dashboard from './pages/Dashboard';
 
-import Home from './pages/Home';
-import Cadastro from './pages/Cadastro';
-import Inicio from './pages/Inicio';
+function Routes() {
+    const { signed } = useAuth();
 
-const Routes = () => {
-    return(
-        <BrowserRouter>
-            <Route component={Home} path="/" exact/>
-            <Route component={Cadastro} path="/users" exact/>
-            <Route component={Inicio} path="/admin" exact/>
-        </BrowserRouter>
-    )
+    console.log(signed)
+
+    if (signed) {
+        return (
+            <BrowserRouter>
+                <Route path="/" exact component={Dashboard}/>
+            </BrowserRouter>
+        );
+    } else{
+        return (
+            <BrowserRouter>
+                <Route path="/" exact component={SignIn}/>
+            </BrowserRouter>
+        );
+    }
 }
 
 export default Routes;

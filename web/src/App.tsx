@@ -1,11 +1,15 @@
 import React from 'react';
 import './App.css';
 
+import {AuthProvider} from './contexts/auth';
+
 import Routes from './routes';
 
-function App() {
+const App: React.FC = () => {
   return (
-    <Routes/>
+      <AuthProvider>
+        <Routes/>
+      </AuthProvider>
   );
 }
 
