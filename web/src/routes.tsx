@@ -7,8 +7,6 @@ import Dashboard from './pages/Dashboard';
 function Routes() {
     const { signed } = useAuth();
 
-    console.log(signed)
-
     if (signed) {
         return (
             <BrowserRouter>

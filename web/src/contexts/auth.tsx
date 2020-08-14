@@ -29,7 +29,7 @@ export const AuthProvider: React.FC = ({ children }) => {
             if(storageUser && storageToken){
                 setUser(JSON.parse(storageUser));
 
-                //api.defaults.headers.Authorization = `Baerer ${storageToken}`;
+                api.defaults.headers.Authorization = `Baerer ${storageToken}`;
             }
         }
         

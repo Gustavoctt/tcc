@@ -1,7 +1,24 @@
-.container{
+#page-signin{
+    display: grid;
+
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr;
+    grid-template-areas: "logo logo login"
+}
+
+.component-left{
+    grid-area: logo;
+    background: #181e72;
+    height: 100vh;
+}
+
+.component-rigth{
+    grid-area: login;
+    height: 100vh;
+}
+
+.component-rigth .button-acess{
     display: flex;
     justify-content: center;
-    align-items: center;
-
-    margin-top: 10rem;
+    align-content: center;
 }
