@@ -3,6 +3,7 @@ import { BrowserRouter, Route } from 'react-router-dom';
 import { useAuth } from './contexts/auth';
 import SignIn from './pages/SignIn';
 import Dashboard from './pages/Dashboard';
+//import Dashboard from './pages/Inicio'
 
 function Routes() {
     const { signed } = useAuth();

@@ -19,19 +19,22 @@ const SignIn: React.FC = () => {
   return (
       <div id="page-signin">
             <div className="component-left">
-                <p>Left</p>
+                <div className="component-text">
+                    <div className="text-primary">
+                        <p>Sua plataforma de divulgação de negócios</p>
+                    </div>
+                    <div className="text-secondary">
+                        <p>Faça o cadastro e atraia ainda mais turistas!</p>
+                    </div>
+                </div>
             </div>
             <div className="component-rigth">
                 <form>
-                    <Input name="Email"/>
-                    <input 
-                        type="email" 
-                        placeholder="Email"
-                    />
-                    <input 
-                        type="password" 
-                        placeholder="Senha"
-                    />
+                    <p className="text-form">
+                        Insira seu email e senha para ter acesso a plataforma.
+                    </p>
+                    <Input name="Email" label="E-mail"/>
+                    <Input name="password" label="Senha"/>
                         <div className="button-acess">
                             <button 
                                 onClick={handleSign}
@@ -39,7 +42,7 @@ const SignIn: React.FC = () => {
                             <span>
                                 <FiLogIn/>
                             </span>
-                                <strong>Acessar</strong>
+                                <p>Acessar</p>
                             </button>
                         </div>
                 </form>
