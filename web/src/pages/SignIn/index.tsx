@@ -5,7 +5,8 @@ import Input from '../../components/Input';
 
 //import {signIn} from '../../services/auth';
 import {useAuth} from '../../contexts/auth';
-import { FiLogIn } from 'react-icons/fi';
+import { FiLogIn, FiPlusCircle } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 
 const SignIn: React.FC = () => {
     const {signIn} = useAuth();
@@ -44,6 +45,14 @@ const SignIn: React.FC = () => {
                             </span>
                                 <p>Acessar</p>
                             </button>
+                        </div>
+                        <div className="cad-acess">
+                            <span>
+                                <FiPlusCircle/>
+                            </span>
+                                <Link to="">
+                                    <p>Se você é novo por aqui, faça o seu cadastro!</p>
+                                </Link>
                         </div>
                 </form>
             </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiLogOut } from 'react-icons/fi';
+import { FiPower } from 'react-icons/fi';
 
 import './styles.css';
 import { useAuth } from '../../contexts/auth';
@@ -18,8 +18,9 @@ const PageHeader: React.FC<PageHeaderProps> = (props) => {
   return(
       <header className="page-header">
           <div className="top-bar-container">
+                  <span/>
                   <span>
-                    <FiLogOut onClick={handleSignOut}/>
+                    <FiPower onClick={handleSignOut}/>
                   </span>
           </div>
 
