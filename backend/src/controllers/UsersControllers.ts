@@ -1,67 +1,87 @@
 import { Request, Response, request, response } from 'express';
-import knex from '../database/connection';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-class UsersController{
-    async create( request: Request, response: Response ){
+import db from '../database/connection';
+
+interface User{
+    id: number;
+    name: string;
+    email: string;
+    password: string;
+}
+
+function generareToken(user: User){
+    return jwt.sign({ id: user.id }, process.env.secret as string, {
+        expiresIn:86400,
+    });
+}
+
+export default class UsersController{
+    async register( request: Request, response: Response ){
         const {
             name,
             email,
             password
         } = request.body;
     
-        const passwordHash = bcrypt.hashSync(password, 10);
+        const user = await db('users').where('email', '=', email).first();
 
-        const user = {
-            name,
-            email,
-            passwordHash
+        if(user){
+            return response.status(400).json({error: 'User already exists'});
         }
-        
-        const insertUsers = await knex('users').insert(user);
-            
-        const user_id = insertUsers[0];
 
-        const token = jwt.sign({ id: user_id }, "secret", { expiresIn: 86400 })
-    
-        return response.json({
-            id: user_id,
-            password,
-            ...user,
-            token
-         });
-    }
+        try {
+            const passwordHash = await bcrypt.hash(password, 10);
 
-    async returnAll(request: Request, response: Response){
-        
-        const users = await knex('users').select('*')
+            await db('users').insert({
+                name,
+                email,
+                password:passwordHash,
+            });
 
-        return response.json({ users });
+            const user = await db('users').where('email', '=', email).first() as User;
+
+            console.log('passou try')
+            return response.status(201).send({
+                token: generareToken(user)
+            }).json({message: 'passou'});
+        } catch (error) {
+
+            return response.status(400).json({
+                error: 'Unexpected error while registering a new user'
+            })
+        }
     }
 
     async login(request: Request, response: Response){
-
         const {email, password} = request.body;
 
         console.log(email, password);
         
-        const user = await knex('users').where({email}).select('*');
+        const user = await db('users').where('email', '=', email).first() as User;
         
-        if(user.length > 0){         
-            
-            if(bcrypt.compareSync(password, user[0].passwordHash)){
+       if(!user){
+           return response.status(400).json({
+               error: 'User not found'
+           });
+       };
 
-                return response.status(200).json({message: 'Entrou'});
+       if(!await bcrypt.compare(password, user.password)){
+           return response.status(400).json({
+               error: 'invalid password'
+           })
+       }
 
-            }else{
-                
-                return response.status(401).json({message: 'Errado'});
-            }
-        }else{
-            return response.status(401).json({message: 'Email Inválido'});
-        } 
+       user.password = '';
+
+       response.send({
+           token: generareToken(user),
+           user: {
+               name: user.name,
+               email: user.email,
+               password: user.password
+           },
+       })
     }
 };
-
-export default UsersController;
