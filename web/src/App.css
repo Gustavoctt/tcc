@@ -1,11 +1,10 @@
 :root {
-    --primary-color-background: #E5E5E5;
-    --secundary-color: #E85C4B;
-    --tertiary-color: #092040;
-    --tertiary-color-dark: #07172e;
+    --primary-color-background: #F5F5F5;
+    --primary-color-button: #E85C4B;
+    --secundary-color-button: #09354B;
+    --secundary-color-button-hover: #05293C;
     --title-color: #092040;
-    --text-color-grey: #6C6C80;
-    --text-color-white: #FFFFFF;
+    --text-color-white: #ffffff;
   }
   
   * {
@@ -14,19 +13,10 @@
     box-sizing: border-box;
   }
 
-  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Ubuntu:wght@400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
   body {
     background: #F0F0F5;
     -webkit-font-smoothing: antialiased;
-    color: var(--text-color);
   }
   
-  body, input, button {
-    font-family: 'Roboto', sans-serif;
-  }
-  
-  h1, h2, h3, h4, h5, h6 {
-    color: var(--title-color);
-    font-family: 'Ubuntu', sans-serif;
-  }
