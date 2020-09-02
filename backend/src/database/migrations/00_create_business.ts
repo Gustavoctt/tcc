@@ -8,14 +8,12 @@ export async function up(knex: Knex){
         table.string('name').notNullable();
         table.string('email').notNullable();
         table.string('whatsapp').notNullable();
-        table.string('instagram').notNullable();
+        table.string('instagram');
+        table.string('bio').notNullable();
         table.decimal('longitude').notNullable();
         table.decimal('latitude').notNullable();
-        table.string('cidade').notNullable();
-        table.string('estado', 2).notNullable();
-
-        table.string('user_id').notNullable();
-        table.foreign('user_id').references('id').inTable('users');
+        table.string('city').notNullable();
+        table.string('uf', 2).notNullable();
     })
 }
 

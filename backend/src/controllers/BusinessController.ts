@@ -8,14 +8,13 @@ class BusinessController{
             email,
             whatsapp,
             instagram,
+            bio,
             longitude,
             latitude,
-            cidade,
-            estado,
+            city,
+            uf,
             actings
         } = request.body;
-
-        const user_id = request.headers.authorization;
 
     //const trx = await knex.transaction();
 
@@ -25,11 +24,11 @@ class BusinessController{
         email,
         whatsapp,
         instagram,
+        bio,
         longitude,
         latitude,
-        cidade,
-        estado,
-        user_id 
+        city,
+        uf,
     })
 
     const businessItems = actings.map((acting_id: number) => {

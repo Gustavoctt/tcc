@@ -6,8 +6,14 @@ import { Map, TileLayer, Marker } from 'react-leaflet';
 import './styles.css';
 
 import { FiArrowLeft } from 'react-icons/fi';
-//import api from '../../services/api';
+import api from '../../services/api';
 import axios from 'axios';
+
+interface Item{
+    id: number;
+    title:string;
+    image_url: string;
+}
 
 interface IBGEUFResponse{
     sigla: string;
@@ -18,17 +24,18 @@ interface IBGECityResponse{
 }
 
 const CreatePoint: React.FC = () => {
+    const[items, setItems] = useState<Item[]>([]);
     const[ufs, setUfs] = useState<string[]>([]);
     const[cities, setCities] = useState<string[]>([]);
 
-    const[initialPosition, setInitialPosition] = useState<[number, number]>([0,0]);
-
-
+    
     const[selectedUf, setSelectedUf] = useState('0');
     const[selectedCity, setSelectedCity] = useState('0');
+    const[selectedItems, setSelectedItems] = useState<number[]>([]);    
     const[selectedPosition, setSelectedPosition] = useState<[number, number]>([0,0]);
-
-
+    
+    
+    const[initialPosition, setInitialPosition] = useState<[number, number]>([0,0]);
     // Inicia pegando a localização do usuário
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(position => {
@@ -59,6 +66,12 @@ const CreatePoint: React.FC = () => {
         });
     }, [selectedUf]);
 
+    //Pega os items que estão no Backend
+    useEffect(() => {
+        api.get('acting').then(response =>{
+            setItems(response.data);
+        });
+    }, []);
 
     //Pegar a resposta do Estado e Cidade
     function handleSelectedUf(event: ChangeEvent<HTMLSelectElement>){
@@ -71,6 +84,20 @@ const CreatePoint: React.FC = () => {
         const city = event.target.value;
 
         setSelectedCity(city);
+    }
+
+    //Seleciona o Item na lista
+    function handleSelectedItem(id: number){
+        const alreadySelected = selectedItems.findIndex(item => item === id);
+
+        if(alreadySelected >= 0){
+            const filteredItems = selectedItems.filter(item => item !== id );
+
+            setSelectedItems(filteredItems);
+
+        }else{
+            setSelectedItems([...selectedItems, id]);
+        }
     }
 
   return (
@@ -195,20 +222,16 @@ const CreatePoint: React.FC = () => {
                     </legend>
 
                     <ul className="items-grid">
-                                
-                        <li>
-                            <img src="" alt="" />
-                            <span>Titulo</span>
-                        </li>
-
-                        <li>
-                            <img src="" alt="" />
-                            <span>Titulo</span>
-                        </li>    <li>
-                            <img src="" alt="" />
-                            <span>Titulo</span>
-                        </li>
-                                
+                        {items.map(item => (
+                            <li
+                                key={item.id}
+                                onClick={() => {handleSelectedItem(item.id)}}
+                                className={selectedItems.includes(item.id) ? 'selected' : ''}
+                            >
+                                <img src={item.image_url} alt={item.title} />
+                                <span>{item.title}</span>
+                            </li>
+                        ))}        
                     </ul>                      
                 </fieldset>
                 <button type="submit">Cadastrar ponto de coleta</button>
