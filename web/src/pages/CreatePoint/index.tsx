@@ -1,13 +1,14 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
-import { Link } from 'react-router-dom';
-
-import { Map, TileLayer, Marker } from 'react-leaflet';
-
-import './styles.css';
-
+import React, { useState, useEffect, ChangeEvent, useCallback, FormEvent } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
+import { Link, useHistory } from 'react-router-dom';
+import { LeafletMouseEvent } from 'leaflet';
+import { Map, TileLayer, Marker } from 'react-leaflet';
+import { toast } from 'react-toastify';
+
 import api from '../../services/api';
 import axios from 'axios';
+
+import './styles.css';
 
 interface Item{
     id: number;
@@ -28,21 +29,38 @@ const CreatePoint: React.FC = () => {
     const[ufs, setUfs] = useState<string[]>([]);
     const[cities, setCities] = useState<string[]>([]);
 
+    const[formData, setFormData] = useState({
+        name: '',
+        email: '',
+        whatsapp: '',
+        bio: '',
+        instagram: '',
+    });
+
     
     const[selectedUf, setSelectedUf] = useState('0');
     const[selectedCity, setSelectedCity] = useState('0');
+
     const[selectedItems, setSelectedItems] = useState<number[]>([]);    
+    const[selectedFile, setSelectedFile] = useState<File>();
     const[selectedPosition, setSelectedPosition] = useState<[number, number]>([0,0]);
-    
-    
     const[initialPosition, setInitialPosition] = useState<[number, number]>([0,0]);
+
+    const history = useHistory();
+    
     // Inicia pegando a localização do usuário
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(position => {
             const{latitude, longitude} = position.coords;
 
             setInitialPosition([latitude,longitude]);
-        })
+        }, () => {
+            toast.error('❌ Opss! Algo deu errado :(', toastOptions);
+        }, 
+        {
+            timeout: 30000,
+            enableHighAccuracy: true,
+        });
     }, []);
 
     //Iniciar carregando as APIS de estado e cidade
@@ -86,6 +104,17 @@ const CreatePoint: React.FC = () => {
         setSelectedCity(city);
     }
 
+    //Seleciona o Ponto no mapa
+    function handleMapClick(event: LeafletMouseEvent){
+        setSelectedPosition([event.latlng.lat, event.latlng.lng]);
+    }
+
+    function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
+        const { name, value } = event.target;
+    
+        setFormData({...formData, [name]: value});
+    }
+
     //Seleciona o Item na lista
     function handleSelectedItem(id: number){
         const alreadySelected = selectedItems.findIndex(item => item === id);
@@ -100,6 +129,65 @@ const CreatePoint: React.FC = () => {
         }
     }
 
+    //Toastify configurations
+    const toastOptions = {
+        autoclose: 5000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+    };
+
+    //Envio final
+    const handleSubmit = useCallback(
+        async (event: FormEvent) => {
+            event.preventDefault();
+
+            try {
+                const {name, email, whatsapp, bio, instagram} = formData;
+                const [latitude, longitude] = selectedPosition;
+                const uf = selectedUf;
+                const city = selectedCity;
+                const items = selectedItems;
+
+                const data = new FormData();
+
+                data.append('name', name);
+                data.append('email', email);
+                data.append('whatsapp', whatsapp);
+                data.append('bio', bio);
+                data.append('instagram', instagram);
+                data.append('latitude', String(latitude));
+                data.append('longitude', String(longitude));
+                data.append('uf', uf);
+                data.append('city', city);
+                data.append('actings', items.join(','));
+
+                if(selectedFile){
+                    data.append('image', selectedFile)
+                }
+
+                await api.post('business', data);
+
+                toast('✅ Criado com sucesso!', toastOptions);
+
+                history.push('/');
+            } catch (error) {
+                toast.error('❌ Erro!', toastOptions);
+                console.log('Erro')
+            }
+        }, [
+            formData,
+            selectedCity,
+            selectedUf,
+            selectedPosition,
+            selectedItems,
+            history,
+            selectedFile,
+        ]
+    )
+
   return (
         <div id="page-create-point">
             <div className="page-header">
@@ -111,7 +199,7 @@ const CreatePoint: React.FC = () => {
                 </header>
             </div>
 
-            <form onSubmit={() => {}} autoComplete="off">
+            <form onSubmit={handleSubmit} autoComplete="off">
                 <h1>
                     Cadastro do local
                 </h1>
@@ -124,6 +212,7 @@ const CreatePoint: React.FC = () => {
                     <div className="field">
                         <label htmlFor="name">Nome do local</label>
                         <input 
+                            onChange={handleInputChange}
                             type="text"
                             name="name"
                             id="name"
@@ -134,6 +223,7 @@ const CreatePoint: React.FC = () => {
                         <div className="field">
                         <label htmlFor="email">E-mail</label>
                         <input
+                            onChange={handleInputChange}
                             type="email"
                             name="email"
                             id="email"
@@ -143,6 +233,7 @@ const CreatePoint: React.FC = () => {
                         <div className="field">
                             <label htmlFor="whatsapp">Whatsapp</label>
                             <input
+                                onChange={handleInputChange}
                                 type="text"
                                 name="whatsapp"
                                 id="whatsapp"
@@ -153,6 +244,7 @@ const CreatePoint: React.FC = () => {
                     <div className="field">
                         <label htmlFor="instagram">User do instragram do seu ponto</label>
                         <input 
+                            onChange={handleInputChange}
                             type="text"
                             name="instagram"
                             id="instagram"
@@ -161,7 +253,10 @@ const CreatePoint: React.FC = () => {
 
                     <div className="textarea-field">
                         <label htmlFor="bio">Biografia do seu negócio</label>
-                        <textarea id="bio"/>
+                        <textarea 
+                            
+                            id="bio"
+                        />
                     </div>
                 </fieldset>
 
@@ -171,7 +266,7 @@ const CreatePoint: React.FC = () => {
                         <span>Selecione o endereço no mapa</span>
                     </legend>
                     
-                    <Map center={initialPosition} zoom={13}>
+                    <Map center={initialPosition} zoom={13} onclick={handleMapClick}>
                         <TileLayer
                              attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contribuitors'
                              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -203,7 +298,7 @@ const CreatePoint: React.FC = () => {
                                 id="city"
                                 onChange={handleSelectedCity}
                             >
-                              <option value="0">Selecionar uma Cidade</option>
+                              <option value={selectedCity}>Selecionar uma Cidade</option>
                                 {cities.map(city => (
                                     <option key={city} value={city}>
                                         {city}
