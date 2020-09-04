@@ -5,6 +5,8 @@ import { LeafletMouseEvent } from 'leaflet';
 import { Map, TileLayer, Marker } from 'react-leaflet';
 import { toast } from 'react-toastify';
 
+import Dropzone from '../../components/Dropzone';
+
 import api from '../../services/api';
 import axios from 'axios';
 
@@ -21,7 +23,7 @@ interface IBGEUFResponse{
 }
 
 interface IBGECityResponse{
-    name: string;
+    nome: string;
 }
 
 const CreatePoint: React.FC = () => {
@@ -37,6 +39,7 @@ const CreatePoint: React.FC = () => {
         instagram: '',
     });
 
+    const[initialPosition, setInitialPosition] = useState<[number, number]>([0,0]);
     
     const[selectedUf, setSelectedUf] = useState('0');
     const[selectedCity, setSelectedCity] = useState('0');
@@ -44,7 +47,6 @@ const CreatePoint: React.FC = () => {
     const[selectedItems, setSelectedItems] = useState<number[]>([]);    
     const[selectedFile, setSelectedFile] = useState<File>();
     const[selectedPosition, setSelectedPosition] = useState<[number, number]>([0,0]);
-    const[initialPosition, setInitialPosition] = useState<[number, number]>([0,0]);
 
     const history = useHistory();
     
@@ -78,7 +80,7 @@ const CreatePoint: React.FC = () => {
         }
         axios.get<IBGECityResponse[]>(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${selectedUf}/municipios`)
         .then(response => {
-            const cityName = response.data.map(city => city.name);
+            const cityName = response.data.map(city => city.nome);
 
             setCities(cityName);
         });
@@ -203,6 +205,8 @@ const CreatePoint: React.FC = () => {
                 <h1>
                     Cadastro do local
                 </h1>
+
+                <Dropzone onFileUploaded={setSelectedFile}/>
 
                 <fieldset>
                     <legend>
