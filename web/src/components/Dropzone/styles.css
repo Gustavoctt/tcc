@@ -22,12 +22,13 @@
     height: calc(100% - 60px);
     border-radius: 10px;
     border: 1px dashed var(--secundary-color-button);
+    font-family: Poppins;
   
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    color: #333;
+    color: #fff;
   }
   
   .dropzone p svg {

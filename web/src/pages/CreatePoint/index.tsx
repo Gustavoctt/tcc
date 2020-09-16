@@ -1,16 +1,16 @@
-import React, { useState, useEffect, ChangeEvent, useCallback, FormEvent } from 'react';
-import { FiArrowLeft } from 'react-icons/fi';
+import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { LeafletMouseEvent } from 'leaflet';
+import { FiArrowLeft } from 'react-icons/fi';
 import { Map, TileLayer, Marker } from 'react-leaflet';
+import { LeafletMouseEvent } from 'leaflet';
 import { toast } from 'react-toastify';
-
-import Dropzone from '../../components/Dropzone';
 
 import api from '../../services/api';
 import axios from 'axios';
-
 import './styles.css';
+
+import Dropzone from '../../components/Dropzone';
+
 
 interface Item{
     id: number;
@@ -31,6 +31,8 @@ const CreatePoint: React.FC = () => {
     const[ufs, setUfs] = useState<string[]>([]);
     const[cities, setCities] = useState<string[]>([]);
 
+    const[initialPosition, setInitialPosition] = useState<[number, number]>([0,0]);
+
     const[formData, setFormData] = useState({
         name: '',
         email: '',
@@ -39,14 +41,13 @@ const CreatePoint: React.FC = () => {
         instagram: '',
     });
 
-    const[initialPosition, setInitialPosition] = useState<[number, number]>([0,0]);
     
     const[selectedUf, setSelectedUf] = useState('0');
     const[selectedCity, setSelectedCity] = useState('0');
 
     const[selectedItems, setSelectedItems] = useState<number[]>([]);    
-    const[selectedFile, setSelectedFile] = useState<File>();
     const[selectedPosition, setSelectedPosition] = useState<[number, number]>([0,0]);
+    const[selectedFile, setSelectedFile] = useState<File>();
 
     const history = useHistory();
     
@@ -114,11 +115,13 @@ const CreatePoint: React.FC = () => {
     function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
         const { name, value } = event.target;
     
+       // console.log(name, value);
         setFormData({...formData, [name]: value});
     }
 
     //Seleciona o Item na lista
     function handleSelectedItem(id: number){
+        
         const alreadySelected = selectedItems.findIndex(item => item === id);
 
         if(alreadySelected >= 0){
@@ -142,53 +145,33 @@ const CreatePoint: React.FC = () => {
     };
 
     //Envio final
-    const handleSubmit = useCallback(
-        async (event: FormEvent) => {
+    async function handleSubmit (event: FormEvent){
             event.preventDefault();
+            
+            const {name, email, whatsapp, bio, instagram} = formData;
+            const uf = selectedUf;
+            const city = selectedCity;
+            const [latitude, longitude] = selectedPosition;
+            const actings = selectedItems;
 
-            try {
-                const {name, email, whatsapp, bio, instagram} = formData;
-                const [latitude, longitude] = selectedPosition;
-                const uf = selectedUf;
-                const city = selectedCity;
-                const items = selectedItems;
-
-                const data = new FormData();
-
-                data.append('name', name);
-                data.append('email', email);
-                data.append('whatsapp', whatsapp);
-                data.append('bio', bio);
-                data.append('instagram', instagram);
-                data.append('latitude', String(latitude));
-                data.append('longitude', String(longitude));
-                data.append('uf', uf);
-                data.append('city', city);
-                data.append('actings', items.join(','));
-
-                if(selectedFile){
-                    data.append('image', selectedFile)
-                }
-
-                await api.post('business', data);
-
-                toast('✅ Criado com sucesso!', toastOptions);
-
-                history.push('/');
-            } catch (error) {
-                toast.error('❌ Erro!', toastOptions);
-                console.log('Erro')
+            const data = {
+                name,
+                email,
+                whatsapp,
+                bio,
+                instagram,
+                latitude,
+                longitude,
+                uf,
+                city,
+                actings,
             }
-        }, [
-            formData,
-            selectedCity,
-            selectedUf,
-            selectedPosition,
-            selectedItems,
-            history,
-            selectedFile,
-        ]
-    )
+
+            await api.post('business', data);
+
+            alert('Ponto criado com sucesso');
+            
+        }
 
   return (
         <div id="page-create-point">
@@ -201,7 +184,7 @@ const CreatePoint: React.FC = () => {
                 </header>
             </div>
 
-            <form onSubmit={handleSubmit} autoComplete="off">
+            <form onSubmit={handleSubmit}>
                 <h1>
                     Cadastro do local
                 </h1>
@@ -255,11 +238,13 @@ const CreatePoint: React.FC = () => {
                         />
                     </div>
 
-                    <div className="textarea-field">
-                        <label htmlFor="bio">Biografia do seu negócio</label>
-                        <textarea 
-                            
+                    <div className="field">
+                        <label htmlFor="bio">Descrição rápida do seu negócio</label>
+                        <input 
+                            onChange={handleInputChange}
+                            name="bio"
                             id="bio"
+                            type="text"
                         />
                     </div>
                 </fieldset>
@@ -270,7 +255,7 @@ const CreatePoint: React.FC = () => {
                         <span>Selecione o endereço no mapa</span>
                     </legend>
                     
-                    <Map center={initialPosition} zoom={13} onclick={handleMapClick}>
+                    <Map center={initialPosition} zoom={14} onclick={handleMapClick}>
                         <TileLayer
                              attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contribuitors'
                              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -300,9 +285,10 @@ const CreatePoint: React.FC = () => {
                             <select 
                                 name="city" 
                                 id="city"
+                                value={selectedCity}
                                 onChange={handleSelectedCity}
                             >
-                              <option value={selectedCity}>Selecionar uma Cidade</option>
+                              <option value="0">Selecionar uma Cidade</option>
                                 {cities.map(city => (
                                     <option key={city} value={city}>
                                         {city}
@@ -324,7 +310,7 @@ const CreatePoint: React.FC = () => {
                         {items.map(item => (
                             <li
                                 key={item.id}
-                                onClick={() => {handleSelectedItem(item.id)}}
+                                onClick={() => handleSelectedItem(item.id)}
                                 className={selectedItems.includes(item.id) ? 'selected' : ''}
                             >
                                 <img src={item.image_url} alt={item.title} />
