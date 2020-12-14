@@ -3,7 +3,6 @@ import { Link, useHistory } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
 import { Map, TileLayer, Marker } from 'react-leaflet';
 import { LeafletMouseEvent } from 'leaflet';
-import { toast } from 'react-toastify';
 
 import api from '../../services/api';
 import axios from 'axios';
@@ -26,7 +25,7 @@ interface IBGECityResponse{
     nome: string;
 }
 
-const CreatePoint: React.FC = () => {
+const CreatePoint = () => {
     const[items, setItems] = useState<Item[]>([]);
     const[ufs, setUfs] = useState<string[]>([]);
     const[cities, setCities] = useState<string[]>([]);
@@ -56,13 +55,7 @@ const CreatePoint: React.FC = () => {
         navigator.geolocation.getCurrentPosition(position => {
             const{latitude, longitude} = position.coords;
 
-            setInitialPosition([latitude,longitude]);
-        }, () => {
-            toast.error('❌ Opss! Algo deu errado :(', toastOptions);
-        }, 
-        {
-            timeout: 30000,
-            enableHighAccuracy: true,
+            setInitialPosition([latitude, longitude]);
         });
     }, []);
 
@@ -109,7 +102,10 @@ const CreatePoint: React.FC = () => {
 
     //Seleciona o Ponto no mapa
     function handleMapClick(event: LeafletMouseEvent){
-        setSelectedPosition([event.latlng.lat, event.latlng.lng]);
+        setSelectedPosition([
+            event.latlng.lat, 
+            event.latlng.lng
+        ]);
     }
 
     function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
@@ -134,16 +130,6 @@ const CreatePoint: React.FC = () => {
         }
     }
 
-    //Toastify configurations
-    const toastOptions = {
-        autoclose: 5000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
-    };
-
     //Envio final
     async function handleSubmit (event: FormEvent){
             event.preventDefault();
@@ -154,7 +140,7 @@ const CreatePoint: React.FC = () => {
             const [latitude, longitude] = selectedPosition;
             const actings = selectedItems;
 
-            const data = {
+           /* const data = {
                 name,
                 email,
                 whatsapp,
@@ -165,11 +151,30 @@ const CreatePoint: React.FC = () => {
                 uf,
                 city,
                 actings,
+            }*/
+
+            const data = new FormData();
+
+            data.append('name', name); 
+            data.append('email', email);
+            data.append('whatsapp', whatsapp);
+            data.append('bio', bio);
+            data.append('instagram', instagram);
+            data.append('uf', uf);
+            data.append('city', city);
+            data.append('latitude', String(latitude));
+            data.append('longitude', String(longitude));
+            data.append('actings', actings.join(','));
+
+            if(selectedFile){
+                data.append('image', selectedFile);
             }
 
             await api.post('business', data);
 
             alert('Ponto criado com sucesso');
+
+            history.push('/');
             
         }
 

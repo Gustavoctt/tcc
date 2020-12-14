@@ -3,7 +3,7 @@ import './App.css';
 
 import Routes from './routes';
 
-const App: React.FC = () => {
+function App() {
   return (
       <Routes/>
   );

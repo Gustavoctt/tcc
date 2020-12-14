@@ -1,4 +1,4 @@
-import { Request, Response, response, request } from 'express';
+import { Request, Response } from 'express';
 import knex from '../database/connection';
 
 class BusinessController{
@@ -16,10 +16,10 @@ class BusinessController{
             actings
         } = request.body;
 
-    //const trx = await knex.transaction();
+    const trx = await knex.transaction();
 
-    const ids = await knex('business').insert({
-        image: 'image-fake',
+    const ids = {
+        image: request.file.filename,
         name,
         email,
         whatsapp,
@@ -28,39 +28,39 @@ class BusinessController{
         longitude,
         latitude,
         city,
-        uf,
-    })
+        uf
+    }
 
-    const businessItems = actings.map((acting_id: number) => {
+    console.log(ids)
+
+    const insertedIds = await trx('business').insert(ids);
+
+    const business_id = insertedIds[0];
+
+    const businessItems = actings
+        .split(',')
+        .map((item: string) => Number(item.trim()))
+        .map((acting_id: number) => {
         return {
-            business_id: ids[0],
+            business_id,
             acting_id
         };
     })
 
-    console.log(businessItems);
+    await trx('business_acting').insert(businessItems);
 
-    await knex('business_acting').insert(businessItems);
-
-    return response.json({succes: true})
-
-    //const insertedIds = await knex('business').insert(business);
-
-
-    /*const businessId = insertedIds[0];
+    await trx.commit();
 
     return response.json({
-        id: businessId,
-        ...business
-    })*/
+        id: business_id,
+        ...actings
+    })
     }
 
     async show(request: Request, response: Response){
         const { id } = request.params;
 
         const business = await knex('business').where('id', id).first();
-
-        console.log(business)
 
         if(!business){
             return response.status(400).json({message: 'Negócio não encontrado'})
@@ -71,19 +71,17 @@ class BusinessController{
                         .where('business_acting.business_id', id)
                         .select('acting.title');
 
-        console.log(acting)
 
-            const serializedBusinnes = {
-                ...business,
-                image_url: `http://localhost:3333/uploads/${business.image}`
-            }
-            console.log(serializedBusinnes)
+        const serializedBusinnes = {
+            ...business,
+            image_url: `http://192.168.0.122:3333/uploads/locais/${business.image}`
+        }
 
-        return response.json({serializedBusinnes, acting});
+        return response.json({ business: serializedBusinnes, acting});
     }
 
     async index(request: Request, response:Response){
-        const {cidade, estado, acting} = request.query;
+        const {city, uf, acting} = request.query;
 
         const parsedActions = String(acting)
                             .split(',')
@@ -92,12 +90,21 @@ class BusinessController{
         const business = await knex('business')
                 .join('business_acting', 'business.id', '=', 'business_acting.business_id')
                 .whereIn('business_acting.acting_id', parsedActions)
-                .where('cidade', String(cidade))
-                .where('estado', String(estado))
+                .where('city', String(city))
+                .where('uf', String(uf))
                 .distinct()
                 .select('business.*');
+        
+            const serializedPoints = business.map(business => {
+                return {
+                    ...business,
+                    image_url: `http://192.168.0.122:3333/uploads/locais/${business.image}`,
+                };
+            });
 
-        return response.json(business)
+            return response.json(serializedPoints);
+
+            return response.json(business);
     }
 }
 
